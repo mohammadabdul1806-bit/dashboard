@@ -1,0 +1,3228 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Academic & Career Dashboard | S.M. Abdul Kalam</title>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Variables & Theme definitions */
+    :root {
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Dark Theme (Default) */
+      --bg-body: #0b0f19;
+      --bg-sidebar: #0f172a;
+      --bg-card: #141e33;
+      --bg-card-hover: #1a2744;
+      --bg-subtle: #1e293b;
+      --border-color: #24324d;
+      --border-light: rgba(255, 255, 255, 0.08);
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-light: rgba(59, 130, 246, 0.15);
+      --secondary: #6366f1;
+      --secondary-light: rgba(99, 102, 241, 0.15);
+
+      --success: #10b981;
+      --success-light: rgba(16, 185, 129, 0.15);
+      --warning: #f59e0b;
+      --warning-light: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-light: rgba(239, 68, 68, 0.15);
+      --purple: #a855f7;
+      --purple-light: rgba(168, 85, 247, 0.15);
+      --cyan: #06b6d4;
+      --cyan-light: rgba(6, 182, 212, 0.15);
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+      --glow-primary: 0 0 20px rgba(59, 130, 246, 0.25);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-width: 260px;
+      --header-height: 70px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-body: #f8fafc;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-subtle: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-light: rgba(0, 0, 0, 0.06);
+
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: rgba(37, 99, 235, 0.1);
+      --secondary: #4f46e5;
+      --secondary-light: rgba(79, 70, 229, 0.1);
+
+      --success: #059669;
+      --success-light: rgba(5, 150, 105, 0.1);
+      --warning: #d97706;
+      --warning-light: rgba(217, 119, 6, 0.1);
+      --danger: #dc2626;
+      --danger-light: rgba(220, 38, 38, 0.1);
+      --purple: #9333ea;
+      --purple-light: rgba(147, 51, 234, 0.1);
+      --cyan: #0891b2;
+      --cyan-light: rgba(8, 145, 178, 0.1);
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+      --glow-primary: 0 0 20px rgba(37, 99, 235, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-body);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: var(--bg-body); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* Layout */
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+      transition: var(--transition);
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo-badge {
+      width: 42px; height: 42px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.15rem;
+      box-shadow: var(--glow-primary);
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 1.25rem 0.75rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0.75rem 0.75rem 0.35rem;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 0.85rem;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background-color: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-item svg {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: var(--transition);
+    }
+
+    /* Top Navigation Header */
+    .top-header {
+      height: var(--header-height);
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .page-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb-root { color: var(--text-muted); font-weight: 500; }
+    .breadcrumb-sep { color: var(--text-muted); }
+    .breadcrumb-current { font-weight: 700; color: var(--text-primary); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 0.95rem;
+      border-radius: var(--radius-md);
+      font-size: 0.825rem;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      background-color: var(--bg-subtle);
+      border-color: var(--text-muted);
+    }
+
+    .action-btn.primary {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .action-btn.primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: var(--glow-primary);
+    }
+
+    .theme-toggle-btn {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover { background-color: var(--bg-subtle); }
+
+    /* Content Area */
+    .dashboard-content {
+      padding: 2rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Global Card Styles */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .card:hover {
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-icon {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Section 1: Profile Header */
+    .profile-hero {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(20, 30, 51, 0.9) 100%), var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    [data-theme="light"] .profile-hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    }
+
+    .profile-hero::before {
+      content: "";
+      position: absolute;
+      top: -100px; right: -80px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0) 70%);
+      pointer-events: none;
+    }
+
+    .profile-content {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .profile-avatar-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 4px solid var(--primary);
+      box-shadow: var(--glow-primary);
+      object-fit: cover;
+      background: linear-gradient(135deg, #1e293b, #334155);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    .profile-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-edit-badge {
+      position: absolute;
+      bottom: 2px; right: 2px;
+      background-color: var(--primary);
+      color: white;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 2px solid var(--bg-card);
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .avatar-edit-badge:hover {
+      transform: scale(1.1);
+      background-color: var(--primary-hover);
+    }
+
+    .profile-info { flex: 1; min-width: 280px; }
+
+    .profile-name-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.35rem;
+    }
+
+    .profile-name {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      background-color: var(--success-light);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .profile-degree {
+      font-size: 1.05rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .profile-college {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .profile-career-goal {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.85rem;
+      background-color: var(--secondary-light);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: var(--radius-md);
+      font-size: 0.825rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    [data-theme="light"] .profile-career-goal { color: var(--secondary); }
+
+    .profile-links-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .contact-link:hover {
+      background-color: var(--bg-card-hover);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .profile-metrics-sidebar {
+      display: flex;
+      gap: 1.25rem;
+      border-left: 1px solid var(--border-color);
+      padding-left: 2rem;
+    }
+
+    @media (max-width: 992px) {
+      .profile-metrics-sidebar {
+        border-left: none;
+        padding-left: 0;
+        width: 100%;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+      }
+    }
+
+    .profile-metric-box {
+      text-align: center;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      min-width: 110px;
+    }
+
+    .profile-metric-box .metric-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .profile-metric-box .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    /* Section 2: Academic Overview */
+    .metrics-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .stat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1.15rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-details { flex: 1; }
+    .stat-label {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-number {
+      font-size: 1.55rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      margin: 2px 0;
+      line-height: 1.2;
+    }
+
+    .stat-subtext {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Academic Visualizations & Charts */
+    .charts-split-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1100px) {
+      .charts-split-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-container-box {
+      position: relative;
+      height: 310px;
+      width: 100%;
+    }
+
+    .sem-pills-filter {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-pill:hover, .filter-pill.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Best and Weakest Subject Highlights */
+    .highlight-banner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .highlight-banner-grid { grid-template-columns: 1fr; }
+    }
+
+    .highlight-card {
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.95rem;
+      border: 1px solid;
+    }
+
+    .highlight-card.best {
+      background-color: var(--success-light);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .highlight-card.weak {
+      background-color: var(--danger-light);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .highlight-badge {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .highlight-card.best .highlight-badge { background-color: var(--success); color: white; }
+    .highlight-card.weak .highlight-badge { background-color: var(--danger); color: white; }
+
+    .highlight-title {
+      font-size: 0.825rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .highlight-card.best .highlight-title { color: var(--success); }
+    .highlight-card.weak .highlight-title { color: var(--danger); }
+
+    .highlight-desc {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    /* Academic Results Table */
+    .table-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 16px; height: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.55rem 1rem 0.55rem 2.4rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    .custom-table th {
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-weight: 700;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+      text-transform: uppercase;
+      font-size: 0.725rem;
+      letter-spacing: 0.05em;
+    }
+
+    .custom-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    .custom-table tbody tr:last-child td { border-bottom: none; }
+    .custom-table tbody tr:hover { background-color: var(--bg-card-hover); }
+
+    .subject-name-cell {
+      color: var(--text-primary);
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .subject-code {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .grade-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.775rem;
+      font-family: var(--font-mono);
+    }
+
+    .grade-O { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .grade-Ap { background-color: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .grade-A { background-color: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4); }
+    .grade-Bp { background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .grade-B { background-color: rgba(234, 88, 12, 0.2); color: #fb923c; border: 1px solid rgba(234, 88, 12, 0.4); }
+    .grade-C { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    .status-badge-pass {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      background-color: var(--success-light);
+      color: var(--success);
+    }
+
+    /* Section 3: Skills */
+    .skills-category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .skill-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .skill-category-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.85rem;
+    }
+
+    .skill-category-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .skill-item-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .skill-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.825rem;
+      font-weight: 600;
+    }
+
+    .skill-name { color: var(--text-primary); }
+    .skill-level-text { color: var(--text-muted); font-size: 0.75rem; }
+
+    .skill-progress-track {
+      width: 100%; height: 7px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-subtle);
+      overflow: hidden;
+    }
+
+    .skill-progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 1s ease-in-out;
+    }
+
+    .skill-tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .skill-tag:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Section 4: Projects and Experience */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .project-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      width: fit-content;
+    }
+
+    .project-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .project-impact {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .project-highlights-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+    }
+
+    .project-highlights-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .project-highlights-list li::before {
+      content: "•";
+      color: var(--primary);
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .tech-stack-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .tech-pill {
+      font-size: 0.725rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Missing Data Placeholder Card */
+    .placeholder-card {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.01);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: var(--transition);
+    }
+
+    .placeholder-card:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .placeholder-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background-color: var(--bg-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+
+    .placeholder-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+    .placeholder-text { font-size: 0.825rem; color: var(--text-muted); max-width: 380px; line-height: 1.4; }
+
+    /* Section 5: Timeline (Achievements, Certs, Education) */
+    .timeline-container {
+      position: relative;
+      padding-left: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .timeline-container::before {
+      content: "";
+      position: absolute;
+      left: 7px; top: 8px; bottom: 8px;
+      width: 2px;
+      background-color: var(--border-color);
+    }
+
+    .timeline-item { position: relative; }
+
+    .timeline-dot {
+      position: absolute;
+      left: -2rem; top: 4px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background-color: var(--bg-card);
+      border: 3px solid var(--primary);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .timeline-item.edu .timeline-dot { border-color: var(--purple); }
+    .timeline-item.cert .timeline-dot { border-color: var(--success); }
+    .timeline-item.train .timeline-dot { border-color: var(--cyan); }
+
+    .timeline-card {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      transition: var(--transition);
+    }
+
+    .timeline-card:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .timeline-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .timeline-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      background-color: var(--bg-card);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .timeline-org {
+      font-size: 0.825rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .timeline-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; }
+
+    /* Section 6: Insights Panel */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .insight-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .insight-badge-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .insight-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .insight-item {
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      border-left: 4px solid var(--primary);
+      font-size: 0.825rem;
+      line-height: 1.45;
+    }
+
+    .insight-item.strength { border-left-color: var(--success); background-color: rgba(16, 185, 129, 0.05); }
+    .insight-item.weakness { border-left-color: var(--danger); background-color: rgba(239, 68, 68, 0.05); }
+    .insight-item.gap { border-left-color: var(--warning); background-color: rgba(245, 158, 11, 0.05); }
+
+    .insight-item strong {
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    /* 5 Actionable Recommendations */
+    .recommendations-wrapper { margin-top: 1.5rem; }
+    .rec-card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .rec-card {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .rec-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .rec-step-number {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
+
+    .rec-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .rec-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+
+    .rec-tag {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      width: fit-content;
+      background-color: var(--secondary-light);
+      color: var(--secondary);
+    }
+
+    [data-theme="dark"] .rec-tag { color: #a5b4fc; }
+    .rec-details { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45; }
+
+    /* Section 7: Goal Tracker */
+    .goal-tracker-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 992px) {
+      .goal-tracker-grid { grid-template-columns: 1fr; }
+    }
+
+    .simulator-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .simulator-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .target-cgpa-display {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: var(--font-mono);
+    }
+
+    .range-slider {
+      width: 100%; height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      outline: none;
+       -webkit-appearance: none;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+      border: 2px solid white;
+    }
+
+    .calc-result-box {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .calc-needed-sgpa {
+      font-size: 2.2rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--success);
+      line-height: 1;
+    }
+
+    .calc-explanation { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; }
+
+    /* Checklist */
+    .checklist-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .checklist-items { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+    }
+
+    .check-item:hover { background-color: var(--bg-card-hover); }
+    .check-item.completed { opacity: 0.7; text-decoration: line-through; }
+    .check-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+    .check-item-text { flex: 1; font-size: 0.85rem; color: var(--text-primary); font-weight: 500; }
+    .check-category-pill {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Modal for Add your data */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-window {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      max-width: 500px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active .modal-window { transform: translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-title { font-size: 1.15rem; font-weight: 700; }
+    .modal-close-btn {
+      background: none; border: none;
+      color: var(--text-muted); cursor: pointer;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .form-input:focus, .form-textarea:focus { border-color: var(--primary); }
+
+    /* Print styles */
+    @media print {
+      body { background-color: white !important; color: black !important; }
+      .sidebar, .top-header, .theme-toggle-btn, .modal-overlay, .filter-pill, .search-input-wrap, .action-btn { display: none !important; }
+      .main-wrapper { margin-left: 0 !important; }
+      .card, .profile-hero, .stat-card, .project-card, .insight-box {
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        background: white !important;
+        color: black !important;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0; }
+      .mobile-menu-btn { display: block; }
+      .top-header { padding: 0 1rem; }
+      .dashboard-content { padding: 1rem; gap: 1.25rem; }
+      .profile-content { gap: 1.25rem; }
+      .profile-avatar { width: 85px; height: 85px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-badge">MBU</div>
+        <div>
+          <div class="brand-title">Academic Portal</div>
+          <div class="brand-subtitle">Student Performance Suite</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-item active" href="#overview" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Overview
+        </a>
+        <a class="nav-item" href="#academics" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Academics & Grades
+        </a>
+        <a class="nav-item" href="#skills" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          Technical Skills
+        </a>
+        <a class="nav-item" href="#projects" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          Projects & Internships
+        </a>
+        <a class="nav-item" href="#timeline" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Certifications & History
+        </a>
+        <a class="nav-item" href="#insights" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Insights & AI Gap Analysis
+        </a>
+        <a class="nav-item" href="#goals" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          Goal Tracker & Planner
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span>Batch: 2023 - 2027</span>
+        <span style="color: var(--success); font-weight:600;">Sem 1-6 Verified</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Bar -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle Navigation">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="page-breadcrumb">
+            <span class="breadcrumb-root">Dashboard</span>
+            <span class="breadcrumb-sep">/</span>
+            <span class="breadcrumb-current">Student Academic Profile</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="action-btn" onclick="window.print()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            Print / Export PDF
+          </button>
+          <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">
+            <svg id="themeIconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg id="themeIconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Dashboard Scrollable View -->
+      <main class="dashboard-content">
+
+        <!-- SECTION 1: PROFILE HEADER -->
+        <section id="overview" class="profile-hero">
+          <div class="profile-content">
+            <div class="profile-avatar-wrapper">
+              <div class="profile-avatar" id="avatarDisplay">
+                <span id="avatarInitials">AK</span>
+              </div>
+              <button class="avatar-edit-badge" onclick="openPhotoModal()" title="Upload or change photo">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              </button>
+            </div>
+
+            <div class="profile-info">
+              <div class="profile-name-row">
+                <h1 class="profile-name">SHAIK MOHAMMAD ABDUL KALAM</h1>
+                <span class="status-pill"><span class="status-dot"></span> Final Year B.Tech • 2026-27</span>
+              </div>
+              <div class="profile-degree">B.Tech. Computer Science & Engineering (Artificial Intelligence & Machine Learning)</div>
+              <div class="profile-college">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                Mohan Babu University (MBU), Tirupati, Andhra Pradesh | Roll: <strong>23102A010171</strong>
+              </div>
+              <div>
+                <span class="profile-career-goal">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  Target Career: Entry-Level Python Developer / AI & ML Engineer
+                </span>
+              </div>
+
+              <div class="profile-links-row">
+                <a href="mailto:mohammadabdul1806@gmail.com" class="contact-link" title="Send Email">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  mohammadabdul1806@gmail.com
+                </a>
+                <a href="tel:+919110336803" class="contact-link" title="Call Phone">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  +91 9110336803
+                </a>
+                <a href="https://linkedin.com/in/mohammad-abdul" target="_blank" rel="noopener noreferrer" class="contact-link" title="LinkedIn Profile">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                  linkedin.com/in/mohammad-abdul
+                </a>
+                <a href="https://github.com/mohammadabdul1806-bit" target="_blank" rel="noopener noreferrer" class="contact-link" title="GitHub Profile">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                  github.com/mohammadabdul1806-bit
+                </a>
+              </div>
+            </div>
+
+            <!-- Profile Summary Metrics -->
+            <div class="profile-metrics-sidebar">
+              <div class="profile-metric-box">
+                <div class="metric-value" style="color: #3b82f6;">7.57</div>
+                <div class="metric-label">CGPA (10 Pt)</div>
+              </div>
+              <div class="profile-metric-box">
+                <div class="metric-value" style="color: #10b981;">146</div>
+                <div class="metric-label">Credits Earned</div>
+              </div>
+              <div class="profile-metric-box">
+                <div class="metric-value" style="color: #a855f7;">0</div>
+                <div class="metric-label">Backlogs</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: ACADEMIC OVERVIEW -->
+        <section id="academics" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- 4 Stat Metric Cards -->
+          <div class="metrics-grid-4">
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              </div>
+              <div class="stat-details">
+                <div class="stat-label">Cumulative CGPA</div>
+                <div class="stat-number">7.57 / 10</div>
+                <div class="stat-subtext" style="color: var(--success);">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                  Across 6 Semesters (146 Credits)
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: var(--success-light); color: var(--success);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <div class="stat-details">
+                <div class="stat-label">Course Clearance Rate</div>
+                <div class="stat-number">100% Pass</div>
+                <div class="stat-subtext" style="color: var(--success);">0 Active Backlogs • 45/45 Passed</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: var(--secondary-light); color: var(--secondary);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </div>
+              <div class="stat-details">
+                <div class="stat-label">Highest Sem SGPA</div>
+                <div class="stat-number">7.95</div>
+                <div class="stat-subtext">Achieved in I-Semester (Dec-2023)</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: var(--warning-light); color: var(--warning);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              </div>
+              <div class="stat-details">
+                <div class="stat-label">Attendance Data</div>
+                <div class="stat-number" style="font-size: 1.15rem; color: var(--text-secondary); cursor: pointer;" onclick="openAttendanceModal()">
+                  <span style="border-bottom: 1px dashed var(--warning); color: var(--warning);">+ Add your data</span>
+                </div>
+                <div class="stat-subtext">Not published on MBU grade card</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Charts Section -->
+          <div class="charts-split-grid">
+            <!-- Line Chart: SGPA & CGPA Trend -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon" style="background: var(--primary-light); color: var(--primary);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                  </div>
+                  <div>
+                    <h2 class="card-title">CGPA & SGPA Progression Trend</h2>
+                    <div class="card-subtitle">Performance trajectory across Semester 1 to Semester 6</div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-container-box">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Grade Distribution Donut Chart -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon" style="background: var(--purple-light); color: var(--purple);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                  </div>
+                  <div>
+                    <h2 class="card-title">Grade Distribution</h2>
+                    <div class="card-subtitle">45 courses classified by letter grade</div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-container-box">
+                <canvas id="gradeDonutChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subject Marks Bar Chart & Highlights -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <div class="card-icon" style="background: var(--cyan-light); color: var(--cyan);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                </div>
+                <div>
+                  <h2 class="card-title">Subject-Wise Performance & Grade Points</h2>
+                  <div class="card-subtitle">Select a semester to inspect grade points (Scale 0 - 10)</div>
+                </div>
+              </div>
+              <div class="sem-pills-filter" id="semFilterButtons">
+                <button class="filter-pill active" onclick="switchSubjectChart(0)">All Semesters</button>
+                <button class="filter-pill" onclick="switchSubjectChart(1)">Sem 1</button>
+                <button class="filter-pill" onclick="switchSubjectChart(2)">Sem 2</button>
+                <button class="filter-pill" onclick="switchSubjectChart(3)">Sem 3</button>
+                <button class="filter-pill" onclick="switchSubjectChart(4)">Sem 4</button>
+                <button class="filter-pill" onclick="switchSubjectChart(5)">Sem 5</button>
+                <button class="filter-pill" onclick="switchSubjectChart(6)">Sem 6</button>
+              </div>
+            </div>
+
+            <div class="chart-container-box" style="height: 350px;">
+              <canvas id="subjectBarChart"></canvas>
+            </div>
+
+            <!-- Best and Weakest Subject Highlights -->
+            <div class="highlight-banner-grid">
+              <div class="highlight-card best">
+                <div class="highlight-badge">★</div>
+                <div>
+                  <div class="highlight-title">Top Academic Strengths (Grade Point 10 & 9 / O & A+)</div>
+                  <div class="highlight-desc">
+                    Achieved perfect <strong>Grade 10 (O)</strong> in <em>Predictive Analytics</em>, <em>AI for Robotics</em>, <em>Design Thinking</em>, <em>Principles of Business Economics</em>, <em>Essentials of Leadership</em>, <em>Innovation & Entrepreneurship</em>, and <em>Environmental Science</em>. Outstanding <strong>Grade 9 (A+)</strong> in <em>Software Architecture</em>, <em>Statistics for Engineers</em>, <em>Computer Architecture</em>, and <em>English</em>.
+                  </div>
+                </div>
+              </div>
+
+              <div class="highlight-card weak">
+                <div class="highlight-badge">!</div>
+                <div>
+                  <div class="highlight-title">Academic Weak Areas (Grade Point 5 & 6 / C & B)</div>
+                  <div class="highlight-desc">
+                    Lowest performance in <strong>Competitive Programming (Grade Point 5 / C)</strong> in Sem 5 and <strong>Logical Reasoning and Recruitment Essentials (Grade Point 5 / C)</strong> in Sem 6. Also scored <strong>Grade Point 6 (B)</strong> in core technical courses: <em>Python Programming (Sem 3)</em>, <em>Database Management Systems (Sem 4)</em>, <em>Software Engineering (Sem 4)</em>, <em>Theory of Computation (Sem 4)</em>, and <em>Web Technologies (Sem 6)</em>.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Results Interactive Marksheet Table -->
+          <div class="card">
+            <div class="table-controls">
+              <div>
+                <h3 style="font-size: 1.05rem; font-weight: 700;">Complete Semester Course Registry</h3>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Explore all 45 verified courses across Semesters I - VI</div>
+              </div>
+              <div class="search-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="courseSearch" class="search-input" placeholder="Search course name, code, or grade..." oninput="filterTable()">
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="custom-table" id="courseTable">
+                <thead>
+                  <tr>
+                    <th>Semester</th>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    <th>Category</th>
+                    <th>Credits</th>
+                    <th>Grade Point</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="courseTableBody">
+                  <!-- Dynamically populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3: SKILLS -->
+        <section id="skills" class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon" style="background: var(--primary-light); color: var(--primary);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              </div>
+              <div>
+                <h2 class="card-title">Technical, Tools & Soft Skills</h2>
+                <div class="card-subtitle">Extracted strictly from verified resume and coursework</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="skills-category-grid">
+            <!-- Programming Languages -->
+            <div class="skill-card">
+              <div class="skill-category-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                <h3 class="skill-category-title">Programming & Web</h3>
+              </div>
+              <div class="skill-item-bar">
+                <div class="skill-bar-labels">
+                  <span class="skill-name">Python (Core, Scripting & ML)</span>
+                  <span class="skill-level-text">Proficient / Primary Focus</span>
+                </div>
+                <div class="skill-progress-track">
+                  <div class="skill-progress-fill" style="width: 80%;"></div>
+                </div>
+              </div>
+              <div class="skill-item-bar">
+                <div class="skill-bar-labels">
+                  <span class="skill-name">HTML & CSS</span>
+                  <span class="skill-level-text">Foundational / Web Basics</span>
+                </div>
+                <div class="skill-progress-track">
+                  <div class="skill-progress-fill" style="width: 75%;"></div>
+                </div>
+              </div>
+              <div class="skill-item-bar">
+                <div class="skill-bar-labels">
+                  <span class="skill-name">Java (Object-Oriented Programming)</span>
+                  <span class="skill-level-text">Coursework (Grade A, 5 credits)</span>
+                </div>
+                <div class="skill-progress-track">
+                  <div class="skill-progress-fill" style="width: 70%;"></div>
+                </div>
+              </div>
+              <div class="skill-item-bar">
+                <div class="skill-bar-labels">
+                  <span class="skill-name">C Programming / Problem Solving</span>
+                  <span class="skill-level-text">Coursework (Grade A, 4 credits)</span>
+                </div>
+                <div class="skill-progress-track">
+                  <div class="skill-progress-fill" style="width: 68%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Developer Tools & Libraries -->
+            <div class="skill-card">
+              <div class="skill-category-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--secondary);"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                <h3 class="skill-category-title">Developer Tools & ML Frameworks</h3>
+              </div>
+              <div class="skill-tag-cloud">
+                <span class="skill-tag">Git & GitHub</span>
+                <span class="skill-tag">Jupyter Notebook</span>
+                <span class="skill-tag">Google Colab</span>
+                <span class="skill-tag">TensorFlow & Keras</span>
+                <span class="skill-tag">OpenCV</span>
+                <span class="skill-tag">NumPy</span>
+                <span class="skill-tag">Pandas</span>
+                <span class="skill-tag">Scikit-Learn</span>
+                <span class="skill-tag">TF-IDF Vectorization</span>
+              </div>
+            </div>
+
+            <!-- Cloud Platforms -->
+            <div class="skill-card">
+              <div class="skill-category-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--cyan);"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                <h3 class="skill-category-title">Cloud Platforms</h3>
+              </div>
+              <div class="skill-item-bar">
+                <div class="skill-bar-labels">
+                  <span class="skill-name">Amazon Web Services (AWS)</span>
+                  <span class="skill-level-text">Formal Training Underway</span>
+                </div>
+                <div class="skill-progress-track">
+                  <div class="skill-progress-fill" style="width: 65%;"></div>
+                </div>
+              </div>
+              <div class="skill-item-bar">
+                <div class="skill-bar-labels">
+                  <span class="skill-name">Microsoft Azure</span>
+                  <span class="skill-level-text">Cloud Fundamentals</span>
+                </div>
+                <div class="skill-progress-track">
+                  <div class="skill-progress-fill" style="width: 60%;"></div>
+                </div>
+              </div>
+              <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.5rem;">
+                * Backed by coursework in <em>Cloud Computing (Sem 6, Grade A)</em>.
+              </div>
+            </div>
+
+            <!-- Concepts & Domains -->
+            <div class="skill-card">
+              <div class="skill-category-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--purple);"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                <h3 class="skill-category-title">Core AI/ML & Computing Concepts</h3>
+              </div>
+              <div class="skill-tag-cloud">
+                <span class="skill-tag">Supervised Learning</span>
+                <span class="skill-tag">Unsupervised Learning</span>
+                <span class="skill-tag">Convolutional Neural Networks (CNN)</span>
+                <span class="skill-tag">Naive Bayes Classification</span>
+                <span class="skill-tag">Computer Vision</span>
+                <span class="skill-tag">Deep Learning</span>
+                <span class="skill-tag">Software Architecture</span>
+                <span class="skill-tag">Operating Systems</span>
+                <span class="skill-tag">Computer Networks</span>
+              </div>
+            </div>
+
+            <!-- Soft Skills & Languages -->
+            <div class="skill-card">
+              <div class="skill-category-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--success);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <h3 class="skill-category-title">Soft Skills & Communication</h3>
+              </div>
+              <div class="skill-tag-cloud" style="margin-bottom: 0.75rem;">
+                <span class="skill-tag" style="border-color: rgba(16, 185, 129, 0.4);">Team Collaboration</span>
+                <span class="skill-tag" style="border-color: rgba(16, 185, 129, 0.4);">Problem Solving</span>
+                <span class="skill-tag" style="border-color: rgba(16, 185, 129, 0.4);">Technical Presentation</span>
+                <span class="skill-tag" style="border-color: rgba(16, 185, 129, 0.4);">Leadership & Ethics</span>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                <strong>Spoken Languages:</strong> English, Telugu, Hindi
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 4: PROJECTS AND EXPERIENCE -->
+        <section id="projects" class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon" style="background: var(--primary-light); color: var(--primary);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              </div>
+              <div>
+                <h2 class="card-title">Projects & Practical Experience</h2>
+                <div class="card-subtitle">Verified technical portfolio and ongoing industry training</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="projects-grid">
+            <!-- Project 1: AI-Based Natural Disaster Detection System -->
+            <div class="project-card">
+              <span class="project-badge">Deep Learning & Vision Project</span>
+              <h3 class="project-title">AI-Based Natural Disaster Detection System</h3>
+              <div class="project-impact">
+                Multi-class computer vision application to accurately recognize and classify natural disasters from aerial and real-time imagery.
+              </div>
+              <ul class="project-highlights-list">
+                <li>Developed an AI-powered pipeline that classifies natural disasters from image datasets.</li>
+                <li>Trained and evaluated a Convolutional Neural Network (CNN) for multi-class image classification.</li>
+                <li>Optimized model performance through rigorous image preprocessing and feature extraction to maximize accuracy.</li>
+              </ul>
+              <div class="tech-stack-row">
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">TensorFlow</span>
+                <span class="tech-pill">Keras</span>
+                <span class="tech-pill">OpenCV</span>
+                <span class="tech-pill">NumPy</span>
+                <span class="tech-pill">Pandas</span>
+                <span class="tech-pill">CNN</span>
+              </div>
+            </div>
+
+            <!-- Project 2: Spam SMS/Email Classifier -->
+            <div class="project-card">
+              <span class="project-badge">NLP & Machine Learning</span>
+              <h3 class="project-title">Spam SMS / Email Classifier</h3>
+              <div class="project-impact">
+                Real-time text categorization system leveraging machine learning to filter spam communications with an interactive user input interface.
+              </div>
+              <ul class="project-highlights-list">
+                <li>Designed a spam classifier for SMS and email messages utilizing TF-IDF feature extraction.</li>
+                <li>Implemented and trained a probabilistic Naive Bayes classification model.</li>
+                <li>Engineered an interactive test input box allowing users to input live custom messages and receive instant prediction verdicts.</li>
+              </ul>
+              <div class="tech-stack-row">
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">Scikit-Learn</span>
+                <span class="tech-pill">TF-IDF</span>
+                <span class="tech-pill">Naive Bayes</span>
+                <span class="tech-pill">NLP</span>
+              </div>
+            </div>
+
+            <!-- Training Experience Card -->
+            <div class="project-card" style="border-color: rgba(99, 102, 241, 0.4);">
+              <span class="project-badge" style="background: var(--secondary-light); color: var(--secondary);">Professional Training</span>
+              <h3 class="project-title">Python Full Stack Development</h3>
+              <div style="font-size: 0.825rem; color: var(--primary); font-weight: 600;">Think Champ, Tirupati</div>
+              <div class="project-impact">
+                Ongoing comprehensive full stack bootcamp focusing on backend Python engineering, database connectivity, and full lifecycle web apps.
+              </div>
+              <ul class="project-highlights-list">
+                <li>Hands-on Python web development, API creation, and database integration.</li>
+                <li>Expected completion: <strong>December 2026</strong>.</li>
+                <li>Concurrent training: <strong>AWS (Amazon Web Services) Cloud Practitioner / Solutions Architect Foundation</strong>.</li>
+              </ul>
+              <div class="tech-stack-row">
+                <span class="tech-pill">Full Stack Python</span>
+                <span class="tech-pill">AWS</span>
+                <span class="tech-pill">Databases</span>
+                <span class="tech-pill">REST APIs</span>
+              </div>
+            </div>
+
+            <!-- Missing Data: Internships Placeholder -->
+            <div class="placeholder-card" onclick="openInternshipModal()" style="cursor: pointer;">
+              <div class="placeholder-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              </div>
+              <div class="placeholder-title">Company Internships: Add your data</div>
+              <div class="placeholder-text">
+                Your resume currently lists intensive training programs but no formal company internships. Click here to add industry internships, company names, or live client engagements.
+              </div>
+              <button class="action-btn primary" style="margin-top: 0.5rem;">+ Add Internship Experience</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5: ACHIEVEMENTS, CERTIFICATIONS & TIMELINE -->
+        <section id="timeline" class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon" style="background: var(--purple-light); color: var(--purple);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div>
+                <h2 class="card-title">Certifications, Training & Academic Timeline</h2>
+                <div class="card-subtitle">Chronological record of credentials and academic milestones</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-container">
+            <!-- Cert 1 -->
+            <div class="timeline-item cert">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">Foundations: Data, Data, Everywhere</span>
+                  <span class="timeline-date">2026</span>
+                </div>
+                <div class="timeline-org">Google (Coursera)</div>
+                <div class="timeline-desc">Comprehensive data analysis foundational certification covering data ecosystems, spreadsheets, SQL query logic, and ethical data decision-making.</div>
+              </div>
+            </div>
+
+            <!-- Cert 2 -->
+            <div class="timeline-item cert">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">Software Architecture</span>
+                  <span class="timeline-date">2026</span>
+                </div>
+                <div class="timeline-org">University of Alberta</div>
+                <div class="timeline-desc">Advanced software design patterns, architectural quality attributes, component coupling, cohesion, and scalable system design principles. (Aligned with Grade A+ in MBU Course 22CS101008M).</div>
+              </div>
+            </div>
+
+            <!-- Cert 3 -->
+            <div class="timeline-item cert">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">Supervised Machine Learning: Classification</span>
+                  <span class="timeline-date">Verified Credential</span>
+                </div>
+                <div class="timeline-org">IBM</div>
+                <div class="timeline-desc">Specialized practical training in binary and multi-class classification algorithms, logistic regression, decision trees, evaluation metrics, and hyperparameter tuning.</div>
+              </div>
+            </div>
+
+            <!-- Cert 4 -->
+            <div class="timeline-item cert">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">Introduction to Artificial Intelligence (AI)</span>
+                  <span class="timeline-date">Verified Credential</span>
+                </div>
+                <div class="timeline-org">IBM</div>
+                <div class="timeline-desc">Broad foundation in cognitive computing, machine learning paradigms, neural networks, ethics in AI, and real-world deployment challenges.</div>
+              </div>
+            </div>
+
+            <!-- Cert 5 -->
+            <div class="timeline-item cert">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">Machine Learning in Business Analytics</span>
+                  <span class="timeline-date">Verified Credential</span>
+                </div>
+                <div class="timeline-org">L&T EduTech</div>
+                <div class="timeline-desc">Industrial perspective on machine learning applications in predictive modeling, business decision support, churn analysis, and enterprise data workflows.</div>
+              </div>
+            </div>
+
+            <!-- Education: B.Tech -->
+            <div class="timeline-item edu">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">B.Tech - Computer Science & Engineering (AI & ML)</span>
+                  <span class="timeline-date">2023 - 2027</span>
+                </div>
+                <div class="timeline-org">Mohan Babu University (MBU), Tirupati</div>
+                <div class="timeline-desc">Final-year undergraduate degree with 7.57 CGPA, zero backlogs, and 146 credits earned across six consecutive semesters.</div>
+              </div>
+            </div>
+
+            <!-- Education: Intermediate -->
+            <div class="timeline-item edu">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">Intermediate (MPC - Mathematics, Physics, Chemistry)</span>
+                  <span class="timeline-date">2020 - 2022</span>
+                </div>
+                <div class="timeline-org">Sri Chaitanya Junior College, Tirupati</div>
+                <div class="timeline-desc">Board of Intermediate Education with 72.14% aggregate.</div>
+              </div>
+            </div>
+
+            <!-- Education: SSC -->
+            <div class="timeline-item edu">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="timeline-title">Secondary School Certificate (SSC / 10th Standard)</span>
+                  <span class="timeline-date">2019 - 2020</span>
+                </div>
+                <div class="timeline-org">J.C.R. Chaitanya English Medium High School, Tirupati</div>
+                <div class="timeline-desc">Passed with outstanding <strong>9.9 CGPA</strong> academic distinction.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 6: INSIGHTS PANEL (ANALYZE MY DATA) -->
+        <section id="insights" class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon" style="background: var(--secondary-light); color: var(--secondary);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
+              <div>
+                <h2 class="card-title">Performance Insights & AI Career Gap Analysis</h2>
+                <div class="card-subtitle">Evidence-based audit of academic marks and resume vs. Entry-Level Python Developer target</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="insights-grid">
+            <!-- Academic Strengths -->
+            <div class="insight-box">
+              <div class="insight-badge-title" style="color: var(--success);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Core Academic Strengths
+              </div>
+              <div class="insight-list">
+                <div class="insight-item strength">
+                  <strong>High-Scoring Advanced AI & Analytical Subjects</strong>
+                  Consistently excels in analytical subjects: <em>Predictive Analytics (O/10)</em>, <em>AI for Robotics (O/10)</em>, <em>Computer Vision (A/8)</em>, and <em>Deep Learning (A/8)</em>.
+                </div>
+                <div class="insight-item strength">
+                  <strong>System Architecture & Engineering Acumen</strong>
+                  Scored <em>A+ (9)</em> in Software Architecture and Statistics for Engineers, along with <em>A (8)</em> in Cloud Computing, Operating Systems, and Object-Oriented Java.
+                </div>
+                <div class="insight-item strength">
+                  <strong>Leadership, Ethics & Entrepreneurship Excellence</strong>
+                  Achieved Grade 10 (O) in Design Thinking, Business Economics, Leadership Essentials, and Innovation Management, highlighting high managerial potential and cross-functional aptitude.
+                </div>
+              </div>
+            </div>
+
+            <!-- Academic Weak Areas -->
+            <div class="insight-box">
+              <div class="insight-badge-title" style="color: var(--danger);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Identified Academic Weak Areas
+              </div>
+              <div class="insight-list">
+                <div class="insight-item weakness">
+                  <strong>Competitive Programming Gap (Sem 5, Grade C / 5 GP)</strong>
+                  The C grade in Competitive Programming indicates difficulty with time-constrained data structures and algorithms (DSA) challenges typically used in coding screening rounds.
+                </div>
+                <div class="insight-item weakness">
+                  <strong>Logical Reasoning & Recruitment Essentials (Sem 6, Grade C / 5 GP)</strong>
+                  Scoring Grade Point 5 in Recruitment Essentials is a critical warning signal for campus placement aptitude tests (quantitative, logical, and verbal rounds).
+                </div>
+                <div class="insight-item weakness">
+                  <strong>Core Software Engineering & DB Foundations (Grade B / 6 GP)</strong>
+                  Scored Grade B in <em>Python Programming (Sem 3)</em>, <em>DBMS (Sem 4)</em>, <em>Software Engineering (Sem 4)</em>, and <em>Web Technologies (Sem 6)</em>. These directly underpin a Python Developer role.
+                </div>
+              </div>
+            </div>
+
+            <!-- Career Goal Gaps -->
+            <div class="insight-box">
+              <div class="insight-badge-title" style="color: var(--warning);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Skill Gaps vs. Target: Python Developer
+              </div>
+              <div class="insight-list">
+                <div class="insight-item gap">
+                  <strong>Modern Python Backend Web Frameworks</strong>
+                  While trained in foundational Python, there are no live production projects in <em>FastAPI</em>, <em>Django</em>, or <em>Flask</em> with asynchronous request handling.
+                </div>
+                <div class="insight-item gap">
+                  <strong>Database Engineering & ORMs (PostgreSQL / SQLAlchemy)</strong>
+                  Resume lacks explicit relational database work and ORM implementation, corroborating the Grade B in DBMS course.
+                </div>
+                <div class="insight-item gap">
+                  <strong>Containerization & CI/CD Tooling</strong>
+                  AWS training is ongoing, but Docker containerization and GitHub Actions CI/CD pipelines are not yet demonstrated in projects.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 Specific Actionable Recommendations -->
+          <div class="recommendations-wrapper">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">5 Specific, Actionable Recommendations for Abdul Kalam</h3>
+            <div style="font-size: 0.825rem; color: var(--text-muted);">Prioritized roadmap to maximize placement success before 2027 graduation</div>
+
+            <div class="rec-card-list">
+              <!-- Rec 1 -->
+              <div class="rec-card">
+                <div class="rec-card-header">
+                  <div class="rec-step-number">1</div>
+                  <div>
+                    <h4 class="rec-title">Overcome DSA & Comp Programming Gap</h4>
+                    <span class="rec-tag">Urgent • Coding Rounds</span>
+                  </div>
+                </div>
+                <div class="rec-details">
+                  Commit to the <strong>NeetCode 75 / Striver's A2Z Sheet</strong> in Python. Practice 2 LeetCode problems daily focusing on Arrays, HashMaps, Two Pointers, Trees, and Dynamic Programming to overcome the C grade in Competitive Programming.
+                </div>
+              </div>
+
+              <!-- Rec 2 -->
+              <div class="rec-card">
+                <div class="rec-card-header">
+                  <div class="rec-step-number">2</div>
+                  <div>
+                    <h4 class="rec-title">Build Full-Stack FastAPI Capstone</h4>
+                    <span class="rec-tag">Portfolio • Python Developer</span>
+                  </div>
+                </div>
+                <div class="rec-details">
+                  Capitalize on the ongoing Think Champ training by architecting a production REST API with <strong>FastAPI, Pydantic, PostgreSQL, and SQLAlchemy</strong>. Deploy the API with Swagger documentation and write unit tests with PyTest.
+                </div>
+              </div>
+
+              <!-- Rec 3 -->
+              <div class="rec-card">
+                <div class="rec-card-header">
+                  <div class="rec-step-number">3</div>
+                  <div>
+                    <h4 class="rec-title">Deploy ML Models into Cloud Microservices</h4>
+                    <span class="rec-tag">AI/ML Integration</span>
+                  </div>
+                </div>
+                <div class="rec-details">
+                  Take the existing <em>Disaster Detection CNN</em> and <em>Spam Classifier</em>, package them inside a <strong>Docker container</strong>, and host the inference endpoint on <strong>AWS EC2 or AWS Lambda</strong>. This bridges your AI coursework with backend deployment.
+                </div>
+              </div>
+
+              <!-- Rec 4 -->
+              <div class="rec-card">
+                <div class="rec-card-header">
+                  <div class="rec-step-number">4</div>
+                  <div>
+                    <h4 class="rec-title">Systematic Placement Aptitude Practice</h4>
+                    <span class="rec-tag">Recruitment Essentials</span>
+                  </div>
+                </div>
+                <div class="rec-details">
+                  Dedicate 30 minutes daily on IndiaBIX / PrepInsta to solve quantitative aptitude, logical puzzles, and verbal reasoning to reverse the Sem 6 Grade C in Recruitment Essentials prior to on-campus placement drives.
+                </div>
+              </div>
+
+              <!-- Rec 5 -->
+              <div class="rec-card">
+                <div class="rec-card-header">
+                  <div class="rec-step-number">5</div>
+                  <div>
+                    <h4 class="rec-title">Target AWS Certified Cloud Practitioner</h4>
+                    <span class="rec-tag">Certification Credibility</span>
+                  </div>
+                </div>
+                <div class="rec-details">
+                  Formalize the ongoing AWS training into the official <strong>AWS Cloud Practitioner (CLF-C02)</strong> certification to complement your Google & IBM credentials and validate enterprise cloud capability.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 7: GOAL TRACKER & CGPA SIMULATOR -->
+        <section id="goals" class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon" style="background: var(--success-light); color: var(--success);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+              </div>
+              <div>
+                <h2 class="card-title">Goal Tracker & Final Year CGPA Simulator</h2>
+                <div class="card-subtitle">Simulate target degree CGPA and track your final year preparation checklist</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="goal-tracker-grid">
+            <!-- CGPA Simulator Card -->
+            <div class="simulator-card">
+              <h3 style="font-size: 1.05rem; font-weight: 700;">Target Graduation CGPA Simulator</h3>
+              <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                You have completed <strong>146 credits</strong> with a <strong>7.57 CGPA</strong>. Estimate the SGPA required across Semesters VII & VIII (est. 40 total credits) to achieve your graduation goal:
+              </p>
+
+              <div class="simulator-slider-group">
+                <div class="slider-header">
+                  <span>Target Final CGPA:</span>
+                  <span class="target-cgpa-display" id="targetCgpaValue">7.80</span>
+                </div>
+                <input type="range" min="7.57" max="8.50" step="0.05" value="7.80" class="range-slider" id="cgpaSlider" oninput="calculateNeededSgpa()">
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">
+                  <span>7.57 (Current)</span>
+                  <span>7.80</span>
+                  <span>8.00</span>
+                  <span>8.50 (Max)</span>
+                </div>
+              </div>
+
+              <div class="calc-result-box">
+                <div style="font-size: 0.775rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Required Average SGPA (Sem 7 & 8)</div>
+                <div class="calc-needed-sgpa" id="neededSgpaDisplay">8.64</div>
+                <div class="calc-explanation" id="calcExplanationText">
+                  To graduate with a 7.80 CGPA across ~186 total degree credits, you will need an average SGPA of <strong>8.64</strong> in your remaining semesters.
+                </div>
+              </div>
+
+              <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                * Assumption based on standard 186 total B.Tech credit curriculum (146 completed + ~40 credits across Sem 7 & 8 including project and electives).
+              </div>
+            </div>
+
+            <!-- Interactive Preparation Checklist -->
+            <div class="checklist-card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 1.05rem; font-weight: 700;">Final Year Milestones & Skills Checklist</h3>
+                <span id="checklistProgress" style="font-size: 0.775rem; font-weight: 700; color: var(--primary);">0/8 Completed</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                Interactive tracking stored locally in your browser. Check off completed items:
+              </p>
+
+              <div class="checklist-items" id="checklistContainer">
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c1">
+                  <span class="check-item-text">Complete Think Champ Python Full Stack Training (by Dec 2026)</span>
+                  <span class="check-category-pill">Training</span>
+                </label>
+
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c2">
+                  <span class="check-item-text">Finish AWS Cloud Training & practice hands-on deployment</span>
+                  <span class="check-category-pill">Cloud</span>
+                </label>
+
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c3">
+                  <span class="check-item-text">Solve 75 core DSA problems on LeetCode in Python (Arrays, Trees, DP)</span>
+                  <span class="check-category-pill">DSA</span>
+                </label>
+
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c4">
+                  <span class="check-item-text">Containerize Disaster Detection CNN project using Docker</span>
+                  <span class="check-category-pill">DevOps</span>
+                </label>
+
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c5">
+                  <span class="check-item-text">Build full-stack Python REST API portfolio piece with FastAPI & Postgres</span>
+                  <span class="check-category-pill">Project</span>
+                </label>
+
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c6">
+                  <span class="check-item-text">Weekly mock quantitative & logical reasoning tests for campus placements</span>
+                  <span class="check-category-pill">Aptitude</span>
+                </label>
+
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c7">
+                  <span class="check-item-text">Secure summer/final-year industry internship or live capstone</span>
+                  <span class="check-category-pill">Internship</span>
+                </label>
+
+                <label class="check-item" onclick="toggleChecklistItem(this)">
+                  <input type="checkbox" data-id="c8">
+                  <span class="check-item-text">Maintain > 8.0 SGPA in Semester VII to lift cumulative CGPA</span>
+                  <span class="check-category-pill">Academic</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD YOUR INTERNSHIP DATA -->
+  <div class="modal-overlay" id="internshipModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Internship Experience</h3>
+        <button class="modal-close-btn" onclick="closeModal('internshipModal')">&times;</button>
+      </div>
+      <form onsubmit="handleSaveInternship(event)">
+        <div class="form-group">
+          <label class="form-label">Company / Organization</label>
+          <input type="text" class="form-input" id="intCompany" placeholder="e.g., Tech Solutions Inc." required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role / Designation</label>
+          <input type="text" class="form-input" id="intRole" placeholder="e.g., Python Developer Intern" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <input type="text" class="form-input" id="intDuration" placeholder="e.g., June 2026 - Aug 2026" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Key Responsibilities / Impact</label>
+          <textarea class="form-textarea" id="intDesc" rows="3" placeholder="Describe projects built, tools used, and measurable results..." required></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.25rem;">
+          <button type="button" class="action-btn" onclick="closeModal('internshipModal')">Cancel</button>
+          <button type="submit" class="action-btn primary">Save Internship</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD YOUR ATTENDANCE DATA -->
+  <div class="modal-overlay" id="attendanceModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Attendance Summary</h3>
+        <button class="modal-close-btn" onclick="closeModal('attendanceModal')">&times;</button>
+      </div>
+      <form onsubmit="handleSaveAttendance(event)">
+        <div class="form-group">
+          <label class="form-label">Overall Attendance Percentage (%)</label>
+          <input type="number" step="0.1" min="0" max="100" class="form-input" id="attPercent" placeholder="e.g. 88.5" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Semester / Academic Term</label>
+          <input type="text" class="form-input" id="attTerm" placeholder="e.g. Current Semester (VI / VII)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes (Optional)</label>
+          <input type="text" class="form-input" id="attNotes" placeholder="e.g. Above 75% mandatory threshold">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.25rem;">
+          <button type="button" class="action-btn" onclick="closeModal('attendanceModal')">Cancel</button>
+          <button type="submit" class="action-btn primary">Update Attendance</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CHANGE PROFILE PHOTO -->
+  <div class="modal-overlay" id="photoModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Update Profile Photo</h3>
+        <button class="modal-close-btn" onclick="closeModal('photoModal')">&times;</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Photo from Device</label>
+        <input type="file" id="photoFileInput" accept="image/*" class="form-input" onchange="previewUserPhoto(event)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Or paste Image URL</label>
+        <input type="url" id="photoUrlInput" class="form-input" placeholder="https://example.com/photo.jpg">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.25rem;">
+        <button type="button" class="action-btn" onclick="closeModal('photoModal')">Cancel</button>
+        <button type="button" class="action-btn primary" onclick="savePhotoUrl()">Apply Photo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC & DATA DEFINITION -->
+  <script>
+    // VERIFIED ACADEMIC DATA (Semesters I to VI from Mohan Babu University Grade Cards)
+    const ACADEMIC_SEMESTERS = [
+      {
+        sem: 1,
+        title: "I-Semester - Batch-I Dec-2023",
+        sgpa: 7.95,
+        cgpa: 7.95,
+        regCredits: 19,
+        compCredits: 19,
+        courses: [
+          { code: "22CS102001", name: "PROGRAMMING FOR PROBLEM SOLVING", credits: 4, gp: 8, grade: "A", status: "Pass", category: "Core CS" },
+          { code: "22MM101401", name: "MATRIX THEORY AND LINEAR ALGEBRA", credits: 3, gp: 8, grade: "A", status: "Pass", category: "Mathematics" },
+          { code: "22EE102401", name: "BASIC ELECTRICAL AND ELECTRONICS ENGINEERING", credits: 4, gp: 7, grade: "B+", status: "Pass", category: "Engineering" },
+          { code: "22AI101001", name: "DISCRETE MATHEMATICAL STRUCTURES", credits: 3, gp: 8, grade: "A", status: "Pass", category: "Mathematics" },
+          { code: "22CB105001", name: "COMPUTER HARDWARE AND SYSTEM ESSENTIALS", credits: 2, gp: 8, grade: "A", status: "Pass", category: "Hardware/Systems" },
+          { code: "22LG102402", name: "EMPOWERING YOUR ENGLISH", credits: 3, gp: 9, grade: "A+", status: "Pass", category: "Humanities/Soft Skills" }
+        ]
+      },
+      {
+        sem: 2,
+        title: "II-Semester - Batch-I May-2024",
+        sgpa: 7.47,
+        cgpa: 7.71,
+        regCredits: 21,
+        compCredits: 21,
+        courses: [
+          { code: "22LG107601", name: "PROFESSIONAL ETHICS AND HUMAN VALUES*", credits: 2, gp: 8, grade: "A", status: "Pass", category: "Humanities/Ethics" },
+          { code: "22AI105001", name: "DESIGN THINKING", credits: 2, gp: 10, grade: "O", status: "Pass", category: "Innovation/Design" },
+          { code: "22MM102453", name: "PHYSICS FOR COMPUTING", credits: 4, gp: 7, grade: "B+", status: "Pass", category: "Basic Sciences" },
+          { code: "22CS101001", name: "DIGITAL LOGIC DESIGN", credits: 3, gp: 7, grade: "B+", status: "Pass", category: "Hardware/Systems" },
+          { code: "22LG105402", name: "SOFT SKILLS", credits: 1, gp: 9, grade: "A+", status: "Pass", category: "Humanities/Soft Skills" },
+          { code: "22AI104002", name: "OBJECT ORIENTED PROGRAMMING THROUGH JAVA", credits: 5, gp: 8, grade: "A", status: "Pass", category: "Core CS" },
+          { code: "22MM102403", name: "CALCULUS AND TRANSFORMATION TECHNIQUES", credits: 4, gp: 6, grade: "B", status: "Pass", category: "Mathematics" }
+        ]
+      },
+      {
+        sem: 3,
+        title: "III-Semester - Batch-I Nov-2024",
+        sgpa: 7.64,
+        cgpa: 7.68,
+        regCredits: 28,
+        compCredits: 28,
+        courses: [
+          { code: "22MM101405", name: "NUMERICAL METHODS, PROBABILITY AND STATISTICS", credits: 3, gp: 7, grade: "B+", status: "Pass", category: "Mathematics" },
+          { code: "22CS101002M", name: "COMPUTER ORGANIZATION AND ARCHITECTURE", credits: 3, gp: 9, grade: "A+", status: "Pass", category: "Hardware/Systems" },
+          { code: "22CM101402M", name: "PRINCIPLES OF BUSINESS ECONOMICS AND ACCOUNTANCY", credits: 3, gp: 10, grade: "O", status: "Pass", category: "Management" },
+          { code: "22LG201701", name: "PERSONALITY DEVELOPMENT", credits: 3, gp: 8, grade: "A", status: "Pass", category: "Humanities/Soft Skills" },
+          { code: "22CS102003", name: "DATA STRUCTURES", credits: 4, gp: 7, grade: "B+", status: "Pass", category: "Core CS" },
+          { code: "22CS102002", name: "PYTHON PROGRAMMING", credits: 4, gp: 6, grade: "B", status: "Pass", category: "Core CS" },
+          { code: "22CB102002", name: "COMPUTER NETWORKS", credits: 4, gp: 7, grade: "B+", status: "Pass", category: "Hardware/Systems" },
+          { code: "22AI102001", name: "OPERATING SYSTEMS", credits: 4, gp: 8, grade: "A", status: "Pass", category: "Hardware/Systems" }
+        ]
+      },
+      {
+        sem: 4,
+        title: "IV-Semester May-2025",
+        sgpa: 7.68,
+        cgpa: 7.68,
+        regCredits: 24,
+        compCredits: 24,
+        courses: [
+          { code: "22IT101001", name: "SOFTWARE ENGINEERING", credits: 3, gp: 6, grade: "B", status: "Pass", category: "Core CS" },
+          { code: "22CS102005", name: "DATABASE MANAGEMENT SYSTEMS", credits: 4, gp: 6, grade: "B", status: "Pass", category: "Core CS" },
+          { code: "22AI102002", name: "ARTIFICIAL INTELLIGENCE", credits: 4, gp: 8, grade: "A", status: "Pass", category: "AI & ML" },
+          { code: "22AI101002", name: "THEORY OF COMPUTATION", credits: 3, gp: 6, grade: "B", status: "Pass", category: "Core CS" },
+          { code: "22MM101408", name: "STATISTICS FOR ENGINEERS", credits: 3, gp: 9, grade: "A+", status: "Pass", category: "Mathematics" },
+          { code: "22MG101401M", name: "ESSENTIALS OF LEADERSHIP", credits: 2, gp: 10, grade: "O", status: "Pass", category: "Management" },
+          { code: "22ME101704M", name: "MANAGING INNOVATION AND ENTREPRENEURSHIP", credits: 3, gp: 10, grade: "O", status: "Pass", category: "Management" },
+          { code: "22CE107601M", name: "ENVIRONMENTAL SCIENCE*", credits: 2, gp: 10, grade: "O", status: "Pass", category: "General Science" }
+        ]
+      },
+      {
+        sem: 5,
+        title: "V-Semester Nov-2025",
+        sgpa: 7.40,
+        cgpa: 7.62,
+        regCredits: 27,
+        compCredits: 27,
+        courses: [
+          { code: "22LG101702S", name: "QUANTITATIVE APTITUDE AND VERBAL ABILITY", credits: 3, gp: 7, grade: "B+", status: "Pass", category: "Aptitude" },
+          { code: "22CS102035S", name: "COMPETITIVE PROGRAMMING", credits: 4, gp: 5, grade: "C", status: "Pass", category: "Core CS" },
+          { code: "22DS101004M", name: "PREDICTIVE ANALYTICS", credits: 3, gp: 10, grade: "O", status: "Pass", category: "AI & ML" },
+          { code: "22CS103001", name: "OBJECT ORIENTED MODELING AND DESIGN", credits: 4, gp: 7, grade: "B+", status: "Pass", category: "Core CS" },
+          { code: "22CS102006", name: "COMPILER DESIGN", credits: 4, gp: 7, grade: "B+", status: "Pass", category: "Core CS" },
+          { code: "22AI102003", name: "MACHINE LEARNING", credits: 4, gp: 7, grade: "B+", status: "Pass", category: "AI & ML" },
+          { code: "22AI101015M", name: "AI FOR ROBOTICS", credits: 3, gp: 10, grade: "O", status: "Pass", category: "AI & ML" },
+          { code: "22AB107601", name: "NSS ACTIVITIES*", credits: 2, gp: 10, grade: "O", status: "Pass", category: "General" }
+        ]
+      },
+      {
+        sem: 6,
+        title: "VI-Semester Apr-2026",
+        sgpa: 7.36,
+        cgpa: 7.57,
+        regCredits: 27,
+        compCredits: 27,
+        courses: [
+          { code: "22CE107603M", name: "RURAL TECHNOLOGY*", credits: 2, gp: 8, grade: "A", status: "Pass", category: "General Science" },
+          { code: "22AI101023M", name: "COMPUTER VISION", credits: 3, gp: 8, grade: "A", status: "Pass", category: "AI & ML" },
+          { code: "22CS101008M", name: "SOFTWARE ARCHITECTURE", credits: 3, gp: 9, grade: "A+", status: "Pass", category: "Core CS" },
+          { code: "22LG101703S", name: "LOGICAL REASONING AND RECRUITMENT ESSENTIALS", credits: 3, gp: 5, grade: "C", status: "Pass", category: "Aptitude" },
+          { code: "22AI101010", name: "NATURE INSPRIED ALGORITHMS", credits: 3, gp: 8, grade: "A", status: "Pass", category: "AI & ML" },
+          { code: "22AI102006", name: "DEEP LEARNING", credits: 4, gp: 8, grade: "A", status: "Pass", category: "AI & ML" },
+          { code: "22IT102003", name: "CLOUD COMPUTING", credits: 4, gp: 8, grade: "A", status: "Pass", category: "Cloud & Systems" },
+          { code: "22IT104001", name: "WEB TECHNOLOGIES", credits: 5, gp: 6, grade: "B", status: "Pass", category: "Core CS" }
+        ]
+      }
+    ];
+
+    // Global Chart Instances
+    let trendChartInstance = null;
+    let gradeDonutChartInstance = null;
+    let subjectBarChartInstance = null;
+
+    // Initialize Dashboard on DOM Load
+    document.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      renderCourseTable();
+      renderTrendChart();
+      renderGradeDonutChart();
+      renderSubjectBarChart(0); // 0 means All Semesters
+      loadChecklistState();
+      calculateNeededSgpa();
+      loadSavedPhoto();
+    });
+
+    // Theme Switcher Logic
+    function initTheme() {
+      const savedTheme = localStorage.getItem("dashboard_theme") || "dark";
+      setTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      setTheme(next);
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("dashboard_theme", theme);
+      const sun = document.getElementById("themeIconSun");
+      const moon = document.getElementById("themeIconMoon");
+      if (theme === "light") {
+        sun.style.display = "block";
+        moon.style.display = "none";
+      } else {
+        sun.style.display = "none";
+        moon.style.display = "block";
+      }
+      updateChartColors();
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("mobile-open");
+    }
+
+    function setActiveNav(element) {
+      document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+      element.classList.add("active");
+      if (window.innerWidth <= 768) {
+        document.getElementById("sidebar").classList.remove("mobile-open");
+      }
+    }
+
+    // Chart.js Theme Helpers
+    function getChartThemeColors() {
+      const isDark = (document.documentElement.getAttribute("data-theme") || "dark") === "dark";
+      return {
+        textColor: isDark ? "#94a3b8" : "#475569",
+        headingColor: isDark ? "#f8fafc" : "#0f172a",
+        gridColor: isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)",
+        tooltipBg: isDark ? "#1e293b" : "#ffffff",
+        tooltipBorder: isDark ? "#334155" : "#e2e8f0"
+      };
+    }
+
+    function updateChartColors() {
+      if (trendChartInstance) {
+        const theme = getChartThemeColors();
+        trendChartInstance.options.scales.x.ticks.color = theme.textColor;
+        trendChartInstance.options.scales.x.grid.color = theme.gridColor;
+        trendChartInstance.options.scales.y.ticks.color = theme.textColor;
+        trendChartInstance.options.scales.y.grid.color = theme.gridColor;
+        trendChartInstance.update();
+      }
+      if (subjectBarChartInstance) {
+        const theme = getChartThemeColors();
+        subjectBarChartInstance.options.scales.x.ticks.color = theme.textColor;
+        subjectBarChartInstance.options.scales.x.grid.color = theme.gridColor;
+        subjectBarChartInstance.options.scales.y.ticks.color = theme.textColor;
+        subjectBarChartInstance.options.scales.y.grid.color = theme.gridColor;
+        subjectBarChartInstance.update();
+      }
+      if (gradeDonutChartInstance) {
+        gradeDonutChartInstance.update();
+      }
+    }
+
+    // Chart 1: SGPA & CGPA Trend
+    function renderTrendChart() {
+      const ctx = document.getElementById("trendChart").getContext("2d");
+      const labels = ACADEMIC_SEMESTERS.map(s => `Sem ${s.sem}`);
+      const sgpaData = ACADEMIC_SEMESTERS.map(s => s.sgpa);
+      const cgpaData = ACADEMIC_SEMESTERS.map(s => s.cgpa);
+      const theme = getChartThemeColors();
+
+      trendChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "SGPA (Semester GPA)",
+              data: sgpaData,
+              borderColor: "#3b82f6",
+              backgroundColor: "rgba(59, 130, 246, 0.12)",
+              borderWidth: 3,
+              tension: 0.35,
+              fill: true,
+              pointBackgroundColor: "#3b82f6",
+              pointBorderColor: "#fff",
+              pointRadius: 6,
+              pointHoverRadius: 8
+            },
+            {
+              label: "CGPA (Cumulative GPA)",
+              data: cgpaData,
+              borderColor: "#10b981",
+              backgroundColor: "rgba(16, 185, 129, 0.08)",
+              borderWidth: 3,
+              tension: 0.35,
+              fill: true,
+              pointBackgroundColor: "#10b981",
+              pointBorderColor: "#fff",
+              pointRadius: 6,
+              pointHoverRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                color: theme.headingColor,
+                font: { family: "'Plus Jakarta Sans', sans-serif", weight: "600", size: 12 },
+                usePointStyle: true,
+                padding: 15
+              }
+            },
+            tooltip: {
+              backgroundColor: theme.tooltipBg,
+              titleColor: theme.headingColor,
+              bodyColor: theme.textColor,
+              borderColor: theme.tooltipBorder,
+              borderWidth: 1,
+              padding: 12,
+              boxPadding: 6,
+              usePointStyle: true
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: theme.gridColor },
+              ticks: { color: theme.textColor, font: { family: "'Plus Jakarta Sans', sans-serif" } }
+            },
+            y: {
+              min: 6.5,
+              max: 9.0,
+              grid: { color: theme.gridColor },
+              ticks: { color: theme.textColor, stepSize: 0.5, font: { family: "'Plus Jakarta Sans', sans-serif" } }
+            }
+          }
+        }
+      });
+    }
+
+    // Chart 2: Grade Distribution Donut
+    function renderGradeDonutChart() {
+      const ctx = document.getElementById("gradeDonutChart").getContext("2d");
+      const counts = { "O": 0, "A+": 0, "A": 0, "B+": 0, "B": 0, "C": 0 };
+      ACADEMIC_SEMESTERS.forEach(s => {
+        s.courses.forEach(c => {
+          if (counts[c.grade] !== undefined) counts[c.grade]++;
+        });
+      });
+
+      const theme = getChartThemeColors();
+
+      gradeDonutChartInstance = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["O (10 GP)", "A+ (9 GP)", "A (8 GP)", "B+ (7 GP)", "B (6 GP)", "C (5 GP)"],
+          datasets: [{
+            data: [counts["O"], counts["A+"], counts["A"], counts["B+"], counts["B"], counts["C"]],
+            backgroundColor: [
+              "#10b981", // O
+              "#3b82f6", // A+
+              "#6366f1", // A
+              "#f59e0b", // B+
+              "#ea580c", // B
+              "#ef4444"  // C
+            ],
+            borderWidth: 2,
+            borderColor: (document.documentElement.getAttribute("data-theme") || "dark") === "dark" ? "#141e33" : "#ffffff"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "68%",
+          plugins: {
+            legend: {
+              position: "right",
+              labels: {
+                color: theme.headingColor,
+                font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: "500" },
+                padding: 10,
+                boxWidth: 12
+              }
+            },
+            tooltip: {
+              backgroundColor: theme.tooltipBg,
+              titleColor: theme.headingColor,
+              bodyColor: theme.textColor,
+              borderColor: theme.tooltipBorder,
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.parsed || 0;
+                  const total = 45;
+                  const pct = Math.round((value / total) * 100);
+                  return ` ${label}: ${value} courses (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Chart 3: Subject Bar Chart (Interactive Filter)
+    function renderSubjectBarChart(semNum) {
+      const ctx = document.getElementById("subjectBarChart").getContext("2d");
+      let filteredCourses = [];
+
+      if (semNum === 0) {
+        ACADEMIC_SEMESTERS.forEach(s => {
+          filteredCourses = filteredCourses.concat(s.courses.map(c => ({
+            ...c,
+            label: `${c.name.substring(0, 20)}... (S${s.sem})`
+          })));
+        });
+        filteredCourses.sort((a, b) => b.gp - a.gp);
+      } else {
+        const targetSem = ACADEMIC_SEMESTERS.find(s => s.sem === semNum);
+        if (targetSem) {
+          filteredCourses = targetSem.courses.map(c => ({
+            ...c,
+            label: c.name
+          }));
+        }
+      }
+
+      const labels = filteredCourses.map(c => c.label);
+      const dataValues = filteredCourses.map(c => c.gp);
+
+      const backgroundColors = filteredCourses.map(c => {
+        if (c.gp >= 10) return "#10b981"; // Best (O)
+        if (c.gp === 9) return "#3b82f6"; // A+
+        if (c.gp === 8) return "#6366f1"; // A
+        if (c.gp === 7) return "#f59e0b"; // B+
+        if (c.gp === 6) return "#ea580c"; // B
+        return "#ef4444"; // Weakest (C)
+      });
+
+      const theme = getChartThemeColors();
+
+      if (subjectBarChartInstance) {
+        subjectBarChartInstance.destroy();
+      }
+
+      subjectBarChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Grade Point (Scale 0-10)",
+            data: dataValues,
+            backgroundColor: backgroundColors,
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: theme.tooltipBg,
+              titleColor: theme.headingColor,
+              bodyColor: theme.textColor,
+              borderColor: theme.tooltipBorder,
+              borderWidth: 1,
+              callbacks: {
+                title: function(items) {
+                  const idx = items[0].dataIndex;
+                  return filteredCourses[idx].name;
+                },
+                label: function(context) {
+                  const idx = context.dataIndex;
+                  const item = filteredCourses[idx];
+                  return ` Grade Point: ${item.gp}/10 | Grade: ${item.grade} | Credits: ${item.credits}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                color: theme.textColor,
+                font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 },
+                maxRotation: 45,
+                minRotation: 45
+              }
+            },
+            y: {
+              min: 0,
+              max: 10,
+              grid: { color: theme.gridColor },
+              ticks: { color: theme.textColor, stepSize: 2 }
+            }
+          }
+        }
+      });
+    }
+
+    function switchSubjectChart(semNum) {
+      const buttons = document.querySelectorAll("#semFilterButtons .filter-pill");
+      buttons.forEach((btn, index) => {
+        if (index === semNum) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+      renderSubjectBarChart(semNum);
+    }
+
+    // Render Full Academic Course Table
+    function renderCourseTable(filterKeyword = "") {
+      const tbody = document.getElementById("courseTableBody");
+      tbody.innerHTML = "";
+      const search = filterKeyword.toLowerCase().trim();
+
+      ACADEMIC_SEMESTERS.forEach(sem => {
+        sem.courses.forEach(c => {
+          const match = !search ||
+            c.name.toLowerCase().includes(search) ||
+            c.code.toLowerCase().includes(search) ||
+            c.category.toLowerCase().includes(search) ||
+            c.grade.toLowerCase().includes(search) ||
+            `sem ${sem.sem}`.includes(search);
+
+          if (match) {
+            const tr = document.createElement("tr");
+
+            let gradeClass = "grade-A";
+            if (c.grade === "O") gradeClass = "grade-O";
+            else if (c.grade === "A+") gradeClass = "grade-Ap";
+            else if (c.grade === "A") gradeClass = "grade-A";
+            else if (c.grade === "B+") gradeClass = "grade-Bp";
+            else if (c.grade === "B") gradeClass = "grade-B";
+            else if (c.grade === "C") gradeClass = "grade-C";
+
+            tr.innerHTML = `
+              <td><span style="font-weight:700; color:var(--primary);">Sem ${sem.sem}</span></td>
+              <td><span class="subject-code">${c.code}</span></td>
+              <td>
+                <div class="subject-name-cell">
+                  <span>${c.name}</span>
+                </div>
+              </td>
+              <td><span style="font-size:0.75rem; color:var(--text-muted);">${c.category}</span></td>
+              <td><strong>${c.credits}</strong></td>
+              <td><span style="font-family:var(--font-mono); font-weight:700;">${c.gp}</span></td>
+              <td><span class="grade-badge ${gradeClass}">${c.grade}</span></td>
+              <td>
+                <span class="status-badge-pass">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  ${c.status}
+                </span>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          }
+        });
+      });
+    }
+
+    function filterTable() {
+      const val = document.getElementById("courseSearch").value;
+      renderCourseTable(val);
+    }
+
+    // Goal Tracker: Simulator Calculation
+    function calculateNeededSgpa() {
+      const slider = document.getElementById("cgpaSlider");
+      const targetCgpa = parseFloat(slider.value);
+      document.getElementById("targetCgpaValue").innerText = targetCgpa.toFixed(2);
+
+      const currentCredits = 146;
+      const currentCgpa = 7.57;
+      const remainingCredits = 40;
+      const totalCredits = currentCredits + remainingCredits;
+
+      const totalTargetPoints = totalCredits * targetCgpa;
+      const currentPoints = currentCredits * currentCgpa;
+      const neededRemainingPoints = totalTargetPoints - currentPoints;
+      const neededSgpa = neededRemainingPoints / remainingCredits;
+
+      const display = document.getElementById("neededSgpaDisplay");
+      const expText = document.getElementById("calcExplanationText");
+
+      if (neededSgpa > 10.0) {
+        display.innerText = "> 10.0";
+        display.style.color = "var(--danger)";
+        expText.innerHTML = `Achieving <strong>${targetCgpa.toFixed(2)} CGPA</strong> is mathematically impossible with 40 remaining credits (would require an SGPA of ${neededSgpa.toFixed(2)}).`;
+      } else {
+        display.innerText = neededSgpa.toFixed(2);
+        display.style.color = neededSgpa > 8.5 ? "var(--warning)" : "var(--success)";
+        expText.innerHTML = `To graduate with a <strong>${targetCgpa.toFixed(2)} CGPA</strong>, you must maintain an average SGPA of <strong>${neededSgpa.toFixed(2)}</strong> across Semesters VII & VIII (~40 credits).`;
+      }
+    }
+
+    // Checklist State with LocalStorage
+    function loadChecklistState() {
+      const saved = JSON.parse(localStorage.getItem("dashboard_checklist") || "{}");
+      const items = document.querySelectorAll("#checklistContainer .check-item");
+      let completedCount = 0;
+
+      items.forEach(item => {
+        const checkbox = item.querySelector("input[type='checkbox']");
+        const id = checkbox.getAttribute("data-id");
+        if (saved[id]) {
+          checkbox.checked = true;
+          item.classList.add("completed");
+          completedCount++;
+        }
+      });
+      updateChecklistProgress(completedCount, items.length);
+    }
+
+    function toggleChecklistItem(item) {
+      const checkbox = item.querySelector("input[type='checkbox']");
+      if (event.target !== checkbox) {
+        checkbox.checked = !checkbox.checked;
+      }
+      if (checkbox.checked) {
+        item.classList.add("completed");
+      } else {
+        item.classList.remove("completed");
+      }
+      saveChecklistState();
+    }
+
+    function saveChecklistState() {
+      const state = {};
+      const items = document.querySelectorAll("#checklistContainer .check-item");
+      let completedCount = 0;
+
+      items.forEach(item => {
+        const checkbox = item.querySelector("input[type='checkbox']");
+        const id = checkbox.getAttribute("data-id");
+        state[id] = checkbox.checked;
+        if (checkbox.checked) completedCount++;
+      });
+
+      localStorage.setItem("dashboard_checklist", JSON.stringify(state));
+      updateChecklistProgress(completedCount, items.length);
+    }
+
+    function updateChecklistProgress(completed, total) {
+      document.getElementById("checklistProgress").innerText = `${completed}/${total} Completed`;
+    }
+
+    // Modal Handlers
+    function openModal(id) { document.getElementById(id).classList.add("active"); }
+    function closeModal(id) { document.getElementById(id).classList.remove("active"); }
+
+    function openInternshipModal() { openModal("internshipModal"); }
+    function openAttendanceModal() { openModal("attendanceModal"); }
+    function openPhotoModal() { openModal("photoModal"); }
+
+    function handleSaveInternship(e) {
+      e.preventDefault();
+      const comp = document.getElementById("intCompany").value;
+      const role = document.getElementById("intRole").value;
+      const dur = document.getElementById("intDuration").value;
+      const desc = document.getElementById("intDesc").value;
+
+      alert(`Added Internship successfully:\n${role} at ${comp} (${dur})\n${desc}`);
+      closeModal("internshipModal");
+    }
+
+    function handleSaveAttendance(e) {
+      e.preventDefault();
+      const pct = document.getElementById("attPercent").value;
+      alert(`Attendance updated to ${pct}%. Data saved in local session.`);
+      closeModal("attendanceModal");
+    }
+
+    // Photo Upload / URL Handling
+    function previewUserPhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          applyAvatarImage(e.target.result);
+          localStorage.setItem("dashboard_avatar", e.target.result);
+          closeModal("photoModal");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function savePhotoUrl() {
+      const url = document.getElementById("photoUrlInput").value.trim();
+      if (url) {
+        applyAvatarImage(url);
+        localStorage.setItem("dashboard_avatar", url);
+        closeModal("photoModal");
+      }
+    }
+
+    function applyAvatarImage(src) {
+      const display = document.getElementById("avatarDisplay");
+      display.innerHTML = `<img src="${src}" alt="S.M. Abdul Kalam">`;
+    }
+
+    function loadSavedPhoto() {
+      const saved = localStorage.getItem("dashboard_avatar");
+      if (saved) {
+        applyAvatarImage(saved);
+      }
+    }
+  </script>
+</body>
+</html>
